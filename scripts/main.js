@@ -6,47 +6,38 @@ import { renderToDom } from "../utils/renderToDom.js";
 // Reusable function to get the cards on the DOM
 // .forEach()
 const renderCards = (array) => {
-  let refStuff = "<h1 class='text-white'>Cards Go Here!</h1>";
-  renderToDom("#cards", refStuff);
-}
-
-// UPDATE/ADD ITEMS TO CART
-// .findIndex() & (.includes() - string method)
-const toggleCart = (event) => {
-  if (event.target.id.includes("fav-btn")) {
-   console.log('Clicked Fav btn')
-  }
-}
-
-// SEARCH
-// .filter()
-const search = (event) => {
-  const eventLC = event.target.value.toLowerCase();
-  console.log(eventLC)
+  let refStuff = "";
+    array.forEach(el => { //loops through the array of objects and adds them to refStuff to be rendered to the dop
+      refStuff += card(el)
+    })
+  renderToDom("#cards", refStuff); 
 }
 
 // BUTTON FILTER
 // .filter() & .reduce() &.sort() - chaining
 const buttonFilter = (event) => {
   if(event.target.id.includes('free')) {
-    console.log('FREE')
+    const free = referenceList.filter(el => el.price <= 0); // filter returns a new array. use variable to catch
+    renderCards(free);
   }
   if(event.target.id.includes('cartFilter')) {
-    console.log('cartFilter')
+    const wishlist = referenceList.filter(el => el.inCart);
+    renderCards(wishlist);
   }
   if(event.target.id.includes('books')) {
-    console.log('books!')
+    const books = referenceList.filter(el => el.type === 'Book')
+    renderCards(books)
   }
   if(event.target.id.includes('clearFilter')) {
-    console.log('clearFilter')
+    renderCards(referenceList) 
   }
   if(event.target.id.includes('productList')) {
     let table = `<table class="table table-dark table-striped" style="width: 600px">
     <thead>
       <tr>
         <th scope="col">Title</th>
-        <th scope="col">Type</th>
         <th scope="col">Price</th>
+        <th scope="col">Type</th>
       </tr>
     </thead>
     <tbody>
@@ -63,17 +54,41 @@ const buttonFilter = (event) => {
   
 }
 
+// SEARCH
+// .filter()
+const search = (event) => {
+  const eventLC = event.target.value.toLowerCase(); // value refers to the value the user inputs
+  const searchMatch = referenceList.filter(el => {
+    el.title.toLowerCase().includes(eventLC) || 
+    el.author.toLowerCase().includes(eventLC) || 
+    el.description.toLowerCase().includes(eventLC)
+  })
+}
+
 // CALCULATE CART TOTAL
 // .reduce() & .some()
-const cartTotal = () => {
+const cartTotal = (array) => {
   const total = 0
+  // total = referenceList.filter(el => el.inCart).reduce((acc,cur) => acc + cur)
   document.querySelector("#cartTotal").innerHTML = total.toFixed(2);
 }
 
 // RESHAPE DATA TO RENDER TO DOM
 // .map()
 const productList = () => {
-  return [{ title: "SAMPLE TITLE", price: 45.00, type: "SAMPLE TYPE" }]
+  return referenceList.map(el => ({
+    title: el.title,
+    price: el.price,
+    type: el.type
+   }))
+}
+
+// UPDATE/ADD ITEMS TO CART
+// .findIndex() & (.includes() - string method)
+const toggleCart = (event) => {
+  if (event.target.id.includes("fav-btn")) {
+   console.log('Clicked Fav btn')
+  }
 }
 
 
